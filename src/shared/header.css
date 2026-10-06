@@ -1,0 +1,71 @@
+.site-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(.75rem, env(safe-area-inset-top)) max(1rem, calc((100% - 70rem) / 2));
+  border-bottom: 1px solid var(--line);
+  background: rgb(251 250 247 / 96%);
+}
+
+.site-wordmark {
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 1.08rem;
+  font-weight: 600;
+  letter-spacing: -.015em;
+  text-decoration: none;
+}
+
+.site-menu { position: relative; }
+.site-menu summary {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: .55rem;
+  padding: .45rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: .35rem;
+  color: var(--ink);
+  background: var(--white, #fff);
+  cursor: pointer;
+  font-size: .85rem;
+  font-weight: 700;
+  list-style: none;
+  user-select: none;
+}
+
+.site-menu summary::-webkit-details-marker { display: none; }
+.site-menu summary:hover { border-color: var(--accent); color: var(--accent-dark); }
+.site-wordmark:focus-visible, .site-menu summary:focus-visible, .site-menu nav a:focus-visible { outline: 4px solid var(--focus); outline-offset: 2px; }
+.menu-icon, .menu-icon::before, .menu-icon::after { display: block; width: 1rem; height: 2px; background: currentColor; content: ""; }
+.menu-icon { position: relative; }
+.menu-icon::before { position: absolute; top: -.32rem; left: 0; }
+.menu-icon::after { position: absolute; top: .32rem; left: 0; }
+.site-menu[open] .menu-icon { background: transparent; }
+.site-menu[open] .menu-icon::before { top: 0; transform: rotate(45deg); }
+.site-menu[open] .menu-icon::after { top: 0; transform: rotate(-45deg); }
+.site-menu nav {
+  position: absolute;
+  top: calc(100% + .55rem);
+  right: 0;
+  display: grid;
+  width: min(17rem, calc(100vw - 2rem));
+  padding: .35rem;
+  border: 1px solid var(--line);
+  border-radius: .45rem;
+  background: var(--white, #fff);
+  box-shadow: 0 .75rem 2rem rgb(0 0 0 / 16%);
+}
+
+.site-menu:not([open]) nav { display: none; }
+.site-menu nav :where(a, span) { padding: .62rem .75rem; border-radius: .25rem; color: var(--muted); font-size: .9rem; font-weight: 700; text-decoration: none; }
+.site-menu nav a:hover { color: var(--accent-dark); background: var(--accent-soft, var(--accent-light)); }
+.site-menu nav [aria-current="page"] { color: var(--accent-dark); background: var(--accent-soft, var(--accent-light)); }
+
+@media (max-width: 700px) {
+  .site-header { padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right)); }
+  .site-wordmark { font-size: 1rem; }
+}

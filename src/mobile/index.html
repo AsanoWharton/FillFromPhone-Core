@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="referrer" content="no-referrer">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>Fill from Phone</title>
+    <link rel="icon" type="image/png" sizes="128x128" href="/favicon.png">
+    <link rel="stylesheet" href="/assets/header.css">
+    <link rel="stylesheet" href="/assets/styles.css">
+    <script type="module" src="/assets/app.js"></script>
+  </head>
+  <body>
+    <header class="site-header"><a class="site-wordmark" href="/" aria-label="Fill from Phone home">Fill from Phone</a><details class="site-menu"><summary><span>Menu</span><span class="menu-icon" aria-hidden="true"></span></summary><nav aria-label="Primary"><a href="/">Home</a><span aria-current="page">Transfer</span><a href="/support">Support</a><a href="/privacy">Privacy</a></nav></details></header>
+    <main class="card" aria-live="polite">
+      <p class="transfer-label">One-time encrypted transfer</p>
+      <h1>Fill from Phone</h1>
+      <section id="loading">
+        <p>Claiming one-time transfer…</p>
+      </section>
+      <section id="send-panel" hidden>
+        <p class="kind" id="transfer-kind"></p>
+        <p class="destination">Sending to <strong id="destination"></strong></p>
+        <label id="value-label" for="short-value">Enter or paste text</label>
+        <input id="short-value" type="text" maxlength="65536" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <textarea id="long-value" rows="6" maxlength="65536" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></textarea>
+        <div class="password-control" id="password-control" hidden>
+          <input id="password-value" type="password" maxlength="65536" autocomplete="current-password" autocapitalize="off" spellcheck="false" aria-describedby="password-guidance">
+          <button class="visibility" id="password-visibility" type="button" aria-label="Show password" aria-controls="password-value" aria-pressed="false">
+            <img id="password-visibility-show-icon" src="/assets/eye.svg" alt="" aria-hidden="true">
+            <img id="password-visibility-hide-icon" src="/assets/eye-slash.svg" alt="" aria-hidden="true" hidden>
+            <span id="password-visibility-label">Show</span>
+          </button>
+        </div>
+        <p class="guidance" id="password-guidance" hidden>Password managers verify credentials by website. If yours does not offer the destination credential here, open it manually. This page never asks the manager to save. Use Show only in private; the value re-masks after 10 seconds or whenever this page loses focus.</p>
+        <button id="send" type="button">Send</button>
+        <p class="assurance" id="assurance">First scan wins. Encrypted end-to-end. Nothing is saved by Fill from Phone.</p>
+      </section>
+      <section id="result" hidden>
+        <h2 id="result-title">Sent</h2>
+        <p id="result-copy">You can close this page.</p>
+        <div class="receipt" id="destruction-receipt" hidden>
+          <h3>Application-level destruction receipt</h3>
+          <ul>
+            <li>The visible input was cleared before transmission.</li>
+            <li>The mutable plaintext byte buffer was overwritten after encryption.</li>
+            <li>Fill from Phone does not retain a recoverable transfer history.</li>
+          </ul>
+          <p>Browser, operating-system, device memory, and password-manager copies cannot be physically erased or independently attested by a web page.</p>
+        </div>
+        <button class="secondary-button" id="close-page" type="button">Clear and close this page</button>
+      </section>
+    </main>
+    <noscript>JavaScript is required to encrypt the value on this device.</noscript>
+  </body>
+</html>

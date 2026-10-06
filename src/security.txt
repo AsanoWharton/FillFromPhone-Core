@@ -1,0 +1,6 @@
+Contact: mailto:contact@asanowharton.com
+Contact: https://fillfromphone.com/support#contact
+Expires: 2027-10-05T23:59:59Z
+Canonical: https://fillfromphone.com/.well-known/security.txt
+Preferred-Languages: en
+Policy: https://fillfromphone.com/support#security

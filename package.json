@@ -1,0 +1,29 @@
+{
+  "name": "@fill-from-phone/core",
+  "version": "0.9.7",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs && tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.mobile.json --noEmit && npm test",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "start": "node dist/server.js",
+    "benchmark": "npm run build && node scripts/benchmark.mjs",
+    "stress:security": "npm run build && node scripts/security-stress.mjs"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "devDependencies": {
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "@fontsource/public-sans": "^5.3.0",
+    "@fontsource/source-serif-4": "^5.3.0",
+    "@types/node": "^24.0.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.9.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true
+  }
+}
