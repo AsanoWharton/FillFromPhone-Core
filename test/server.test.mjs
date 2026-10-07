@@ -158,6 +158,8 @@ test("public phone entry links to support and publishes the security contact", a
   assert.match(mobile, /href="\/support">Support<\/a>/u);
   assert.match(mobile, /name="fillfromphone-credential-context-version" content="1"/u);
   assert.match(mobile, /data-ffp-context-version="1"/u);
+  assert.match(mobile, /\/assets\/eye\.svg\?v=003c71/u);
+  assert.match(mobile, /\/assets\/eye-slash\.svg\?v=003c71/u);
   assert.match(mobile, /<nav aria-label="Legal"><a href="\/privacy">Privacy<\/a><a href="\/privacy#terms">Terms of Service<\/a><\/nav>/u);
   assert.match(mobile, /<p class="footer-copy"><span>&copy; 2026 <a href="https:\/\/fillfromphone\.com">FillFromPhone\.com<\/a>\.<\/span><span>Powered by <a href="https:\/\/asanowharton\.com">Asano Wharton, LLC<\/a>\.<\/span><span>All rights reserved\.<\/span><\/p>/u);
   assert.doesNotMatch(mobile, /site-menu|menu-icon|>Menu</u);

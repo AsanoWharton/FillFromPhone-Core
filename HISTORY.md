@@ -1,5 +1,9 @@
 # Public history
 
+## 0.9.18 — 2026-10-07
+
+- Versioned the navy visibility icons so browsers replace previously cached teal assets immediately.
+
 ## 0.9.17 — 2026-10-07
 
 - Adopted Asano Wharton's Sora and Space Grotesk typography using locally hosted font files.
