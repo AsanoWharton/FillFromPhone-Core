@@ -93,6 +93,7 @@ button:disabled { opacity: .55; cursor: wait; }
 .secondary-button:hover { background: var(--accent-light); }
 
 footer { width: min(calc(100% - 2rem), 31rem); margin-inline: auto; padding: 0 0 max(1rem, env(safe-area-inset-bottom)); color: var(--muted); font-size: .7rem; line-height: 1.45; text-align: center; }
-footer p { margin: 0; }
+.footer-copy { display: grid; justify-items: center; gap: .1rem; margin: 0; text-wrap: balance; }
+.footer-copy span { white-space: nowrap; }
 footer nav { display: flex; justify-content: center; gap: 1rem; margin-top: .35rem; }
 footer a { color: var(--accent-dark); text-underline-offset: .15em; }

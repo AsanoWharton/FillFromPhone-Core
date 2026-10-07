@@ -1,5 +1,10 @@
 # Public history
 
+## 0.9.13 — 2026-10-07
+
+- Centered the transfer-page footer and improved its narrow-screen line breaks.
+- Linked FillFromPhone.com to its canonical HTTPS URL.
+
 ## 0.9.12 — 2026-10-07
 
 - Added a hostname-isolated development channel with pinned extension identities.
