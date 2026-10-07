@@ -1,5 +1,10 @@
 # Public history
 
+## 0.9.16 — 2026-10-07
+
+- Standardized the header wordmark on locally hosted Public Sans.
+- Added stable fallback sizing while retaining visible keyboard focus.
+
 ## 0.9.15 — 2026-10-07
 
 - Restyled Support as a regular navigation link instead of a bordered control.

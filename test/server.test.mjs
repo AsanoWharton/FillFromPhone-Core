@@ -147,6 +147,7 @@ test("public phone entry links to support and publishes the security contact", a
   const mobile = await readFile(new URL("../dist/public/mobile.html", import.meta.url), "utf8");
   const headerStyles = await readFile(new URL("../dist/public/assets/header.css", import.meta.url), "utf8");
   const securityPolicy = await readFile(new URL("../dist/public/security.txt", import.meta.url), "utf8");
+  assert.match(headerStyles, /\.site-wordmark \{[^}]*font-family: "Public Sans", system-ui,[^}]*font-size-adjust: from-font/u);
   assert.match(mobile, /class="site-wordmark" href="\/"/u);
   assert.match(mobile, /href="\/support">Support<\/a>/u);
   assert.match(mobile, /name="fillfromphone-credential-context-version" content="1"/u);
