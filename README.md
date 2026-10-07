@@ -14,6 +14,8 @@ The Chrome receiver is maintained in `FillFromPhone-Extension`. Marketing, priva
 - The phone performs ephemeral P-256 ECDH, HKDF-SHA-256, and AES-256-GCM in its browser. The relay has no decryption path.
 - The mobile endpoint has a restrictive CSP, no analytics, no cookies, no storage API, and no remote scripts.
 - An optional second HTTPS origin can be isolated to explicitly pinned development-extension identities without weakening the production allowlist.
+- HTML is delivered with a per-response script nonce, strict CSP and Trusted Types policy; API requests are additionally checked with Fetch Metadata where browsers provide it.
+- Aggregate and operation-specific abuse limits bound reservations, claims, uploads, event streams, cancellations, and preflights.
 
 These are narrow, testable code properties—not a claim that a browser, runtime, deployment, or organization is FIPS validated, FedRAMP authorized, or otherwise certified.
 
@@ -34,6 +36,8 @@ PUBLIC_ORIGIN=http://127.0.0.1:8787 npm start
 ```
 
 The relay listens on `127.0.0.1:8787` by default. Environment names and non-secret example values are documented in `.env.example`. No production topology, host identity, credential, tunnel identifier, or deployment record is included in this repository.
+
+This repository is a reduced public export. The private canonical repository and its tagged audit evidence are authoritative for release identity and deployment.
 
 ## Repository status
 

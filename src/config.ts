@@ -46,7 +46,7 @@ export function loadConfig(): Config {
   if (extensionIds.some((value) => !/^[a-p]{32}$/.test(value))) throw new Error("invalid ALLOWED_EXTENSION_IDS");
   const developmentOriginValue = process.env.DEVELOPMENT_ORIGIN;
   let developmentOrigin: string | undefined;
-  if (developmentOriginValue !== undefined && developmentOriginValue !== "") {
+  if (developmentOriginValue !== undefined) {
     const developmentUrl = new URL(developmentOriginValue);
     if (developmentUrl.origin !== developmentOriginValue || developmentUrl.protocol !== "https:") {
       throw new Error("invalid DEVELOPMENT_ORIGIN");
