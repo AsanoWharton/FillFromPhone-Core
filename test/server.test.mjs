@@ -149,7 +149,7 @@ test("public phone entry links to support and publishes the security contact", a
   const mobileStyles = await readFile(new URL("../dist/public/assets/styles.css", import.meta.url), "utf8");
   const securityPolicy = await readFile(new URL("../dist/public/security.txt", import.meta.url), "utf8");
   assert.match(headerStyles, /\.site-wordmark \{[^}]*font-family: "Sora", "Space Grotesk", sans-serif;[^}]*font-size-adjust: from-font/u);
-  assert.match(mobileStyles, /--accent: #003c71/u);
+  assert.match(mobileStyles, /--accent: #146c68/u);
   assert.match(mobileStyles, /font-family: "Space Grotesk", "Segoe UI", sans-serif/u);
   for (const fontName of ["space-grotesk-400.woff2", "space-grotesk-500.woff2", "space-grotesk-700.woff2", "sora-700.woff2"]) {
     await access(new URL(`../dist/public/assets/${fontName}`, import.meta.url));
@@ -158,8 +158,8 @@ test("public phone entry links to support and publishes the security contact", a
   assert.match(mobile, /href="\/support">Support<\/a>/u);
   assert.match(mobile, /name="fillfromphone-credential-context-version" content="1"/u);
   assert.match(mobile, /data-ffp-context-version="1"/u);
-  assert.match(mobile, /\/assets\/eye\.svg\?v=003c71/u);
-  assert.match(mobile, /\/assets\/eye-slash\.svg\?v=003c71/u);
+  assert.match(mobile, /\/assets\/eye\.svg\?v=0d514e/u);
+  assert.match(mobile, /\/assets\/eye-slash\.svg\?v=0d514e/u);
   assert.match(mobile, /<nav aria-label="Legal"><a href="\/privacy">Privacy<\/a><a href="\/privacy#terms">Terms of Service<\/a><\/nav>/u);
   assert.match(mobile, /<p class="footer-copy"><span>&copy; 2026 <a href="https:\/\/fillfromphone\.com">FillFromPhone\.com<\/a>\.<\/span><span>Powered by <a href="https:\/\/asanowharton\.com">Asano Wharton, LLC<\/a>\.<\/span><span>All rights reserved\.<\/span><\/p>/u);
   assert.doesNotMatch(mobile, /site-menu|menu-icon|>Menu</u);

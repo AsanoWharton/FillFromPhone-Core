@@ -5,13 +5,13 @@
 
 :root {
   color-scheme: light;
-  --ink: #0b1f33;
-  --muted: #4c5f70;
-  --accent: #003c71;
-  --accent-dark: #002a52;
-  --accent-light: #e6eff6;
-  --gray: #f0f4f8;
-  --line: #768b9c;
+  --ink: #222522;
+  --muted: #5c635e;
+  --accent: #146c68;
+  --accent-dark: #0d514e;
+  --accent-light: #deeeea;
+  --gray: #f2efe8;
+  --line: #7a827c;
   --focus: #9a5b00;
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   font-size-adjust: from-font;
@@ -52,7 +52,7 @@ label { display: block; margin-bottom: .5rem; font-weight: 700; }
 textarea, input[type="password"], input[type="text"] {
   display: block;
   width: 100%;
-  border: 1px solid #546879;
+  border: 1px solid var(--line);
   border-radius: .3rem;
   padding: .8rem;
   background: #fff;

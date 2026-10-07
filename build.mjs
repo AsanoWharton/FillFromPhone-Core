@@ -5,7 +5,7 @@ import { build } from "esbuild";
 function icon(definition) {
   const [width, height, , , path] = definition.icon;
   if (typeof path !== "string") throw new Error(`unexpected icon data for ${definition.iconName}`);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img"><path fill="#003c71" d="${path}"/></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img"><path fill="#0d514e" d="${path}"/></svg>`;
 }
 
 const output = new URL("./dist/public/", import.meta.url);

@@ -1,5 +1,10 @@
 # Public history
 
+## 0.9.19 — 2026-10-07
+
+- Kept Sora and Space Grotesk while restoring Fill from Phone's green transfer interface.
+- Versioned the green visibility icons so browsers replace cached navy assets.
+
 ## 0.9.18 — 2026-10-07
 
 - Versioned the navy visibility icons so browsers replace previously cached teal assets immediately.

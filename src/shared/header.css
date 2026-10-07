@@ -7,7 +7,7 @@
   justify-content: space-between;
   padding: max(.75rem, env(safe-area-inset-top)) max(1rem, calc((100% - 70rem) / 2));
   border-bottom: 1px solid var(--line);
-  background: rgb(255 255 255 / 96%);
+  background: rgb(251 250 247 / 96%);
 }
 
 .site-wordmark {
