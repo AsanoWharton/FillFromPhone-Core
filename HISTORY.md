@@ -1,5 +1,12 @@
 # Public history
 
+## 0.10.1 — 2026-10-07
+
+- Added nonce-bound document script execution, Trusted Types enforcement, Fetch Metadata rejection, and expanded browser isolation headers.
+- Added separate reservation, claim, payload, event, cancellation, preflight, and aggregate request limits.
+- Bounded methods, expectation handling, headers, and requests per connection while retaining protocol-v5 behavior.
+- Preserved the reduced public Core boundary; private deployment topology and assessment evidence remain outside this export.
+
 ## 0.9.19 — 2026-10-07
 
 - Kept Sora and Space Grotesk while restoring Fill from Phone's green transfer interface.

@@ -1,5 +1,5 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { getFips } from "node:crypto";
+import { getFips, randomBytes } from "node:crypto";
 import { realpathSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { isIP } from "node:net";
@@ -32,17 +32,40 @@ class RateLimiter {
 }
 
 function securityHeaders(res: ServerResponse): void {
-  res.setHeader("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'; media-src 'none'");
+  res.setHeader("Content-Security-Policy", "default-src 'none'; script-src 'none'; script-src-attr 'none'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'; media-src 'none'; require-trusted-types-for 'script'; trusted-types 'none'");
   res.setHeader("Referrer-Policy", "no-referrer");
-  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()");
+  res.setHeader("Permissions-Policy", "accelerometer=(), browsing-topics=(), camera=(), display-capture=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), publickey-credentials-create=(), publickey-credentials-get=(), usb=(), clipboard-read=(self), clipboard-write=(self)");
   res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-DNS-Prefetch-Control", "off");
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
   res.setHeader("Origin-Agent-Cluster", "?1");
   res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
   res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   // no-transform prevents CDN security products from injecting script into the cryptographic endpoint.
   res.setHeader("Cache-Control", "no-store, no-transform, max-age=0");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Vary", "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site");
+}
+
+function documentCsp(nonce: string): string {
+  return `default-src 'none'; script-src 'nonce-${nonce}' 'strict-dynamic'; script-src-attr 'none'; style-src 'self'; connect-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; worker-src 'none'; manifest-src 'none'; media-src 'none'; require-trusted-types-for 'script'; trusted-types 'none'`;
+}
+
+function sendHtml(res: ServerResponse, method: string, source: Buffer): void {
+  const nonce = randomBytes(18).toString("base64url");
+  const body = Buffer.from(source.toString("utf8").replace(/<script(?=\s|>)/gu, `<script nonce="${nonce}"`), "utf8");
+  res.setHeader("Content-Security-Policy", documentCsp(nonce));
+  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Content-Length": body.length });
+  res.end(method === "HEAD" ? undefined : body);
+}
+
+function appendVary(res: ServerResponse, value: string): void {
+  const current = String(res.getHeader("Vary") ?? "").split(",").map((item) => item.trim()).filter(Boolean);
+  if (!current.some((item) => item.toLowerCase() === value.toLowerCase())) current.push(value);
+  res.setHeader("Vary", current.join(", "));
 }
 
 function requestServiceOrigin(req: IncomingMessage, config: Config): string | undefined {
@@ -66,11 +89,22 @@ function cors(req: IncomingMessage, res: ServerResponse, serviceOrigin: string, 
   if (!origin) return true;
   if (!isAllowedOrigin(origin, serviceOrigin, config)) return false;
   res.setHeader("Access-Control-Allow-Origin", origin);
-  res.setHeader("Vary", "Origin");
+  appendVary(res, "Origin");
   res.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Read-Token, X-Write-Token, X-Claim-Token");
   res.setHeader("Access-Control-Max-Age", "600");
   return true;
+}
+
+function fetchMetadataAllowed(req: IncomingMessage, path: string, serviceOrigin: string, config: Config): boolean {
+  if (!path.startsWith("/v1/")) return true;
+  const origin = req.headers.origin;
+  if (origin && isAllowedOrigin(origin, serviceOrigin, config)) return true;
+  const site = req.headers["sec-fetch-site"];
+  if (site === undefined) return true;
+  if (site !== "same-origin") return false;
+  const destination = req.headers["sec-fetch-dest"];
+  return destination === undefined || destination === "empty";
 }
 
 function clientKey(req: IncomingMessage, config: Config): string {
@@ -147,6 +181,12 @@ function token(req: IncomingMessage, name: "x-read-token" | "x-write-token" | "x
   return value;
 }
 
+function enforceRateLimit(limiter: RateLimiter, res: ServerResponse, key: string, scope: string, limit: number): void {
+  if (limiter.allow(`${key}:${scope}`, limit)) return;
+  res.setHeader("Retry-After", "60");
+  throw new StoreError(429, "rate_limited");
+}
+
 export function createApp(config: Config = loadConfig()): ReturnType<typeof createServer> {
   if (config.requireFips && getFips() !== 1) throw new Error("FIPS mode is required but the active Node.js cryptographic module is not in FIPS mode");
   const store = new SessionStore(config.maxActiveSessions);
@@ -155,6 +195,18 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
 
   const server = createServer(async (req, res) => {
     securityHeaders(res);
+    const method = req.method ?? "GET";
+    let path: string;
+    try {
+      path = new URL(req.url ?? "/", "http://service.invalid").pathname;
+    } catch {
+      return json(res, 400, { error: "invalid_request" });
+    }
+    if (!["GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"].includes(method)) {
+      res.setHeader("Allow", "GET, HEAD, POST, PUT, DELETE, OPTIONS");
+      return json(res, 405, { error: "method_not_allowed" });
+    }
+    if (req.headers.expect !== undefined) return json(res, 417, { error: "expectation_failed" });
     const requestedServiceOrigin = requestServiceOrigin(req, config);
     if (config.trustProxy && !requestedServiceOrigin) {
       return json(res, 421, { error: "misdirected_request" });
@@ -163,18 +215,25 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
     if (serviceOrigin === config.developmentOrigin) {
       res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
     }
+    const key = clientKey(req, config);
+    if (!limiter.allow(`${key}:all`, 900)) {
+      res.setHeader("Retry-After", "60");
+      return json(res, 429, { error: "rate_limited" });
+    }
+    if (req.method === "OPTIONS" && !limiter.allow(`${key}:preflight`, 300)) {
+      res.setHeader("Retry-After", "60");
+      return json(res, 429, { error: "rate_limited" });
+    }
+    if (!fetchMetadataAllowed(req, path, serviceOrigin, config)) return json(res, 403, { error: "cross_site_forbidden" });
     if (!cors(req, res, serviceOrigin, config)) return json(res, 403, { error: "origin_forbidden" });
     if (req.method === "OPTIONS") return res.writeHead(204).end();
-    const method = req.method ?? "GET";
-    const path = new URL(req.url ?? "/", "http://service.invalid").pathname;
-    const key = clientKey(req, config);
 
     try {
-      if (!limiter.allow(key, method === "POST" ? 120 : 600)) throw new StoreError(429, "rate_limited");
       if (method === "GET" && path === "/api/health/live") return json(res, 200, { status: "ok" });
       if (method === "GET" && path === "/api/health/ready") return json(res, 200, { status: "ready" });
 
       if (method === "POST" && path === "/v1/session") {
+        enforceRateLimit(limiter, res, key, "reserve", 20);
         const body = object(await readJson(req));
         requireExactKeys(body, ["id", "expiresAt", "writeTokenHash", "readTokenHash"]);
         const id = requiredString(body.id, 43);
@@ -194,6 +253,7 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
         const id = match[2] as string;
         const action = match[3];
         if (method === "POST" && action === "claim") {
+          enforceRateLimit(limiter, res, key, "claim", 90);
           if (req.headers["transfer-encoding"] || Number(req.headers["content-length"] ?? 0) !== 0) {
             throw new StoreError(400, "invalid_request");
           }
@@ -201,10 +261,12 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
           return json(res, 201, { status: "claimed", claimToken });
         }
         if (method === "PUT" && action === "payload") {
+          enforceRateLimit(limiter, res, key, "payload", 90);
           const status = store.put(id, token(req, "x-write-token"), token(req, "x-claim-token"), parseEnvelope(await readJson(req)));
           return json(res, 202, { status });
         }
         if (method === "GET" && action === "events") {
+          enforceRateLimit(limiter, res, key, "events", 120);
           const unsubscribe = store.subscribe(id, token(req, "x-read-token"), (delivery) => {
             if (delivery.type === "claimed") res.write("event: claimed\ndata: {}\n\n");
             else if (delivery.type === "payload") res.end(`event: payload\ndata: ${JSON.stringify(delivery.envelope)}\n\n`);
@@ -221,6 +283,7 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
           return;
         }
         if (method === "DELETE" && action === undefined) {
+          enforceRateLimit(limiter, res, key, "cancel", 90);
           store.cancel(id, token(req, "x-read-token"));
           return res.writeHead(204).end();
         }
@@ -228,8 +291,7 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
 
       if ((method === "GET" || method === "HEAD") && TRANSFER_PATH.test(path)) {
         const body = await readFile(`${publicRoot}mobile.html`);
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Content-Length": body.length });
-        return res.end(method === "HEAD" ? undefined : body);
+        return sendHtml(res, method, body);
       }
       if ((method === "GET" || method === "HEAD") && path === "/assets/app.js") {
         const body = await readFile(`${publicRoot}assets/app.js`);
@@ -285,7 +347,8 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
   server.requestTimeout = 15_000;
   server.headersTimeout = 10_000;
   server.keepAliveTimeout = 5_000;
-  server.maxRequestsPerSocket = 1_000;
+  server.maxHeadersCount = 32;
+  server.maxRequestsPerSocket = 100;
   return server;
 }
 
