@@ -7,17 +7,21 @@
   justify-content: space-between;
   padding: max(.75rem, env(safe-area-inset-top)) max(1rem, calc((100% - 70rem) / 2));
   border-bottom: 1px solid var(--line);
-  background: rgb(251 250 247 / 96%);
+  background: rgb(255 255 255 / 96%);
 }
 
 .site-wordmark {
   color: var(--ink);
-  font-family: "Public Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Sora", "Space Grotesk", sans-serif;
   font-size: 1.08rem;
   font-size-adjust: from-font;
   font-weight: 700;
   letter-spacing: -.015em;
   text-decoration: none;
+}
+
+@supports not (font-size-adjust: from-font) {
+  .site-wordmark { line-height: 1.2; }
 }
 
 .site-header nav { display: flex; align-items: center; }

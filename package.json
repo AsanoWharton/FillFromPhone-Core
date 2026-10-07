@@ -1,6 +1,6 @@
 {
   "name": "@fill-from-phone/core",
-  "version": "0.9.16",
+  "version": "0.9.17",
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
@@ -16,9 +16,9 @@
     "node": ">=24.0.0"
   },
   "devDependencies": {
+    "@fontsource/sora": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
-    "@fontsource/public-sans": "^5.3.0",
-    "@fontsource/source-serif-4": "^5.3.0",
     "@types/node": "^24.0.0",
     "esbuild": "^0.25.0",
     "typescript": "^5.9.0"

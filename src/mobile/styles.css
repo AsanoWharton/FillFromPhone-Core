@@ -1,18 +1,20 @@
-@font-face { font-family: "Public Sans"; src: url("/assets/public-sans-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "Public Sans"; src: url("/assets/public-sans-700.woff2") format("woff2"); font-weight: 700 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Source Serif 4"; src: url("/assets/source-serif-600.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Space Grotesk"; src: url("/assets/space-grotesk-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Space Grotesk"; src: url("/assets/space-grotesk-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Space Grotesk"; src: url("/assets/space-grotesk-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Sora"; src: url("/assets/sora-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
 
 :root {
   color-scheme: light;
-  --ink: #222522;
-  --muted: #5c635e;
-  --accent: #146c68;
-  --accent-dark: #0d514e;
-  --accent-light: #deeeea;
-  --gray: #f2efe8;
-  --line: #cbc8bf;
-  --focus: #f2b84b;
-  font-family: "Public Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ink: #0b1f33;
+  --muted: #4c5f70;
+  --accent: #003c71;
+  --accent-dark: #002a52;
+  --accent-light: #e6eff6;
+  --gray: #f0f4f8;
+  --line: #768b9c;
+  --focus: #9a5b00;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-size-adjust: from-font;
   background: var(--gray);
   color: var(--ink);
 }
@@ -40,17 +42,17 @@ body {
 }
 
 .transfer-label { margin: 0 0 .6rem; color: var(--accent-dark); font-size: .78rem; font-weight: 700; }
-h1, h2 { color: var(--ink); font-family: "Source Serif 4", Georgia, serif; font-weight: 600; }
+h1, h2 { color: var(--ink); font-family: "Sora", "Space Grotesk", sans-serif; font-size-adjust: from-font; font-weight: 700; }
 h1 { margin: 0 0 1.5rem; font-size: 1.9rem; }
 h2 { margin: 0 0 .5rem; font-size: 1.4rem; }
-label { display: block; margin-bottom: .5rem; font-weight: 750; }
+label { display: block; margin-bottom: .5rem; font-weight: 700; }
 .kind { display: inline-block; margin: 0 0 .65rem; padding: .2rem .5rem; border-radius: .2rem; background: var(--accent-light); color: var(--accent-dark); font-size: .76rem; font-weight: 700; }
 .destination { margin: 0 0 1.25rem; color: var(--muted); overflow-wrap: anywhere; }
 
 textarea, input[type="password"], input[type="text"] {
   display: block;
   width: 100%;
-  border: 1px solid #5c5c5c;
+  border: 1px solid #546879;
   border-radius: .3rem;
   padding: .8rem;
   background: #fff;
@@ -74,7 +76,7 @@ button {
   background: var(--accent);
   color: #fff;
   font: inherit;
-  font-weight: 750;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -84,7 +86,7 @@ button:disabled { opacity: .55; cursor: wait; }
 .visibility:hover { border-color: var(--line); background: var(--gray); color: var(--ink); }
 .visibility img { width: 1.05rem; height: 1.05rem; }
 .visibility img[hidden] { display: none; }
-.assurance { margin: 1rem 0 0; padding: .75rem; border-left: .3rem solid var(--accent); background: var(--accent-light); color: #303030; font-size: .88rem; }
+.assurance { margin: 1rem 0 0; padding: .75rem; border-left: .3rem solid var(--accent); background: var(--accent-light); color: var(--ink); font-size: .88rem; }
 .receipt { margin-top: 1rem; padding: 1rem; border: 1px solid var(--line); background: var(--gray); }
 .receipt h3 { margin: 0 0 .5rem; color: var(--ink); font-size: 1rem; }
 .receipt ul { margin: 0; padding-left: 1.25rem; }
@@ -97,3 +99,8 @@ footer { width: min(calc(100% - 2rem), 31rem); margin-inline: auto; padding: 0 0
 .footer-copy span { white-space: nowrap; }
 footer nav { display: flex; justify-content: center; gap: 1rem; margin-top: .35rem; }
 footer a { color: var(--accent-dark); text-underline-offset: .15em; }
+
+@supports not (font-size-adjust: from-font) {
+  :root { line-height: 1.5; }
+  h1, h2 { line-height: 1.15; }
+}

@@ -246,18 +246,14 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
         res.writeHead(200, { "Content-Type": "text/css; charset=utf-8", "Content-Length": body.length });
         return res.end(method === "HEAD" ? undefined : body);
       }
-      if ((method === "GET" || method === "HEAD") && path === "/assets/public-sans-400.woff2") {
-        const body = await readFile(`${publicRoot}assets/public-sans-400.woff2`);
-        res.writeHead(200, { "Content-Type": "font/woff2", "Content-Length": body.length, "Cache-Control": "public, max-age=31536000, immutable" });
-        return res.end(method === "HEAD" ? undefined : body);
-      }
-      if ((method === "GET" || method === "HEAD") && path === "/assets/public-sans-700.woff2") {
-        const body = await readFile(`${publicRoot}assets/public-sans-700.woff2`);
-        res.writeHead(200, { "Content-Type": "font/woff2", "Content-Length": body.length, "Cache-Control": "public, max-age=31536000, immutable" });
-        return res.end(method === "HEAD" ? undefined : body);
-      }
-      if ((method === "GET" || method === "HEAD") && path === "/assets/source-serif-600.woff2") {
-        const body = await readFile(`${publicRoot}assets/source-serif-600.woff2`);
+      const fontRoutes: Record<string, string> = {
+        "/assets/space-grotesk-400.woff2": "space-grotesk-400.woff2",
+        "/assets/space-grotesk-500.woff2": "space-grotesk-500.woff2",
+        "/assets/space-grotesk-700.woff2": "space-grotesk-700.woff2",
+        "/assets/sora-700.woff2": "sora-700.woff2"
+      };
+      if ((method === "GET" || method === "HEAD") && fontRoutes[path]) {
+        const body = await readFile(`${publicRoot}assets/${fontRoutes[path]}`);
         res.writeHead(200, { "Content-Type": "font/woff2", "Content-Length": body.length, "Cache-Control": "public, max-age=31536000, immutable" });
         return res.end(method === "HEAD" ? undefined : body);
       }

@@ -1,5 +1,10 @@
 # Public history
 
+## 0.9.17 — 2026-10-07
+
+- Adopted Asano Wharton's Sora and Space Grotesk typography using locally hosted font files.
+- Reworked the transfer interface around the Asano Wharton navy, white, and black palette with accessible contrast.
+
 ## 0.9.16 — 2026-10-07
 
 - Standardized the header wordmark on locally hosted Public Sans.
