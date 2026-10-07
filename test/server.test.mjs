@@ -145,6 +145,7 @@ test("relay schemas reject metadata and plaintext fields", async (context) => {
 
 test("public phone entry links to support and publishes the security contact", async () => {
   const mobile = await readFile(new URL("../dist/public/mobile.html", import.meta.url), "utf8");
+  const headerStyles = await readFile(new URL("../dist/public/assets/header.css", import.meta.url), "utf8");
   const securityPolicy = await readFile(new URL("../dist/public/security.txt", import.meta.url), "utf8");
   assert.match(mobile, /class="site-wordmark" href="\/"/u);
   assert.match(mobile, /href="\/support">Support<\/a>/u);
@@ -154,6 +155,9 @@ test("public phone entry links to support and publishes the security contact", a
   assert.match(mobile, /<p class="footer-copy"><span>&copy; 2026 <a href="https:\/\/fillfromphone\.com">FillFromPhone\.com<\/a>\.<\/span><span>Powered by <a href="https:\/\/asanowharton\.com">Asano Wharton, LLC<\/a>\.<\/span><span>All rights reserved\.<\/span><\/p>/u);
   assert.doesNotMatch(mobile, /site-menu|menu-icon|>Menu</u);
   assert.doesNotMatch(mobile, /href="\/(?:security|cryptography|licenses)"/u);
+  const supportRule = headerStyles.match(/\.site-support \{([^}]*)\}/u)?.[1] ?? "";
+  assert.doesNotMatch(supportRule, /border|background|min-height/u);
+  assert.match(headerStyles, /\.site-support:hover, \.site-support\[aria-current="page"\] \{[^}]*text-decoration: underline/u);
   assert.match(securityPolicy, /^Contact: mailto:contact@asanowharton\.com$/mu);
 });
 
