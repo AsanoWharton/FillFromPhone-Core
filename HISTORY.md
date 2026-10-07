@@ -1,5 +1,11 @@
 # Public history
 
+## 0.9.12 — 2026-10-07
+
+- Added a hostname-isolated development channel with pinned extension identities.
+- Added an advisory password-manager interoperability hint without changing the QR or relay protocol.
+- Simplified the transfer-page header and legal footer.
+
 ## Initial technical release — 2026-10-06
 
 - Protocol version 5 relay and mobile entry client.

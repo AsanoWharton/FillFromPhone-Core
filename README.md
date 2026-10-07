@@ -13,6 +13,7 @@ The Chrome receiver is maintained in `FillFromPhone-Extension`. Marketing, priva
 - Payload state is held in process memory and expires after 120 seconds. No account, recovery path, or durable payload database exists.
 - The phone performs ephemeral P-256 ECDH, HKDF-SHA-256, and AES-256-GCM in its browser. The relay has no decryption path.
 - The mobile endpoint has a restrictive CSP, no analytics, no cookies, no storage API, and no remote scripts.
+- An optional second HTTPS origin can be isolated to explicitly pinned development-extension identities without weakening the production allowlist.
 
 These are narrow, testable code properties—not a claim that a browser, runtime, deployment, or organization is FIPS validated, FedRAMP authorized, or otherwise certified.
 

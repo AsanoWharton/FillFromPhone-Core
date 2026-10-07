@@ -7,6 +7,8 @@ export interface Config {
   maxActiveSessions: number;
   requireFips?: boolean;
   allowedExtensionIds?: ReadonlySet<string>;
+  developmentOrigin?: string;
+  developmentExtensionIds?: ReadonlySet<string>;
   /** One-character deployment slot discriminator embedded into every assigned session ID. */
   slotId?: "B" | "G";
 }
@@ -42,6 +44,26 @@ export function loadConfig(): Config {
     .map((value) => value.trim())
     .filter(Boolean);
   if (extensionIds.some((value) => !/^[a-p]{32}$/.test(value))) throw new Error("invalid ALLOWED_EXTENSION_IDS");
+  const developmentOriginValue = process.env.DEVELOPMENT_ORIGIN;
+  let developmentOrigin: string | undefined;
+  if (developmentOriginValue !== undefined && developmentOriginValue !== "") {
+    const developmentUrl = new URL(developmentOriginValue);
+    if (developmentUrl.origin !== developmentOriginValue || developmentUrl.protocol !== "https:") {
+      throw new Error("invalid DEVELOPMENT_ORIGIN");
+    }
+    if (developmentUrl.origin === parsed.origin) throw new Error("DEVELOPMENT_ORIGIN must differ from PUBLIC_ORIGIN");
+    developmentOrigin = developmentUrl.origin;
+  }
+  const developmentExtensionIds = (process.env.DEVELOPMENT_EXTENSION_IDS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  if (developmentExtensionIds.some((value) => !/^[a-p]{32}$/.test(value))) {
+    throw new Error("invalid DEVELOPMENT_EXTENSION_IDS");
+  }
+  if ((developmentOrigin === undefined) !== (developmentExtensionIds.length === 0)) {
+    throw new Error("DEVELOPMENT_ORIGIN and DEVELOPMENT_EXTENSION_IDS must be configured together");
+  }
   const slotId = process.env.SLOT_ID;
   if (slotId !== undefined && slotId !== "B" && slotId !== "G") throw new Error("invalid SLOT_ID");
   return {
@@ -52,6 +74,10 @@ export function loadConfig(): Config {
     maxActiveSessions: integer("MAX_ACTIVE_SESSIONS", 10_000, 1, 100_000),
     requireFips: boolean("REQUIRE_FIPS", false),
     allowedExtensionIds: new Set(extensionIds),
+    ...(developmentOrigin === undefined ? {} : {
+      developmentOrigin,
+      developmentExtensionIds: new Set(developmentExtensionIds)
+    }),
     ...(slotId === undefined ? {} : { slotId })
   };
 }

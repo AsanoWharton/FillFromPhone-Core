@@ -1,6 +1,9 @@
+import { credentialProviderContext } from "./credential-context.js";
+
 const MAX_PLAINTEXT_BYTES = 65_536;
 const INFO_V5 = new TextEncoder().encode("fill-from-phone/aes-gcm/v5");
 type FieldKind = "short-text" | "long-text" | "password";
+const CREDENTIAL_CONTEXT_META_NAME = "fillfromphone-credential-context";
 
 function arrayBuffer(bytes: Uint8Array): ArrayBuffer {
   return bytes.slice().buffer;
@@ -89,6 +92,7 @@ async function encrypt(bootstrap: Bootstrap, plaintext: Uint8Array): Promise<Rec
 }
 
 function showResult(title: string, copy: string): void {
+  clearCredentialProviderContext();
   document.querySelector<HTMLElement>("#loading")!.hidden = true;
   document.querySelector<HTMLElement>("#send-panel")!.hidden = true;
   document.querySelector<HTMLElement>("#result")!.hidden = false;
@@ -96,7 +100,32 @@ function showResult(title: string, copy: string): void {
   document.querySelector<HTMLElement>("#result-copy")!.textContent = copy;
 }
 
+function clearCredentialProviderContext(): void {
+  document.querySelector<HTMLMetaElement>(`meta[name="${CREDENTIAL_CONTEXT_META_NAME}"]`)?.remove();
+  const input = document.querySelector<HTMLInputElement>("#password-value");
+  if (!input) return;
+  delete input.dataset.ffpClaimedOrigin;
+  delete input.dataset.ffpCredentialKind;
+  delete input.dataset.ffpAuthority;
+  delete input.dataset.ffpMediation;
+}
+
+function publishCredentialProviderContext(bootstrap: Bootstrap, input: HTMLInputElement): void {
+  clearCredentialProviderContext();
+  const context = credentialProviderContext(bootstrap.origin, bootstrap.fieldKind);
+  if (!context) return;
+  const metadata = document.createElement("meta");
+  metadata.name = CREDENTIAL_CONTEXT_META_NAME;
+  metadata.content = JSON.stringify(context);
+  document.head.append(metadata);
+  input.dataset.ffpClaimedOrigin = context.claimedOrigin;
+  input.dataset.ffpCredentialKind = context.credentialKind;
+  input.dataset.ffpAuthority = context.authority;
+  input.dataset.ffpMediation = context.mediation;
+}
+
 function closeAndClear(): void {
+  clearCredentialProviderContext();
   document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input, textarea").forEach((control) => { control.value = ""; });
   history.replaceState(null, "", "/");
   window.close();
@@ -136,6 +165,7 @@ async function start(): Promise<void> {
   const passwordMode = bootstrap.fieldKind === "password";
   const longTextMode = bootstrap.fieldKind === "long-text";
   const valueControl: HTMLTextAreaElement | HTMLInputElement = passwordMode ? passwordInput : longTextMode ? longTextarea : shortInput;
+  publishCredentialProviderContext(bootstrap, passwordInput);
   document.querySelector<HTMLElement>("#destination")!.textContent = new URL(bootstrap.origin).host;
   document.querySelector<HTMLElement>("#transfer-kind")!.textContent = passwordMode ? "Password transfer" : longTextMode ? "Long text transfer" : "Short text transfer";
   document.querySelector<HTMLLabelElement>("#value-label")!.htmlFor = passwordMode ? "password-value" : longTextMode ? "long-value" : "short-value";

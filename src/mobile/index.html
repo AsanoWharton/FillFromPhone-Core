@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="referrer" content="no-referrer">
     <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="fillfromphone-credential-context-version" content="1">
     <title>Fill from Phone</title>
     <link rel="icon" type="image/png" sizes="128x128" href="/favicon.png">
     <link rel="stylesheet" href="/assets/header.css">
@@ -12,7 +13,7 @@
     <script type="module" src="/assets/app.js"></script>
   </head>
   <body>
-    <header class="site-header"><a class="site-wordmark" href="/" aria-label="Fill from Phone home">Fill from Phone</a><details class="site-menu"><summary><span>Menu</span><span class="menu-icon" aria-hidden="true"></span></summary><nav aria-label="Primary"><a href="/">Home</a><span aria-current="page">Transfer</span><a href="/support">Support</a><a href="/privacy">Privacy</a></nav></details></header>
+    <header class="site-header"><a class="site-wordmark" href="/" aria-label="Fill from Phone home">Fill from Phone</a><nav aria-label="Primary"><a class="site-support" href="/support">Support</a></nav></header>
     <main class="card" aria-live="polite">
       <p class="transfer-label">One-time encrypted transfer</p>
       <h1>Fill from Phone</h1>
@@ -26,7 +27,7 @@
         <input id="short-value" type="text" maxlength="65536" autocomplete="off" autocapitalize="off" spellcheck="false">
         <textarea id="long-value" rows="6" maxlength="65536" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></textarea>
         <div class="password-control" id="password-control" hidden>
-          <input id="password-value" type="password" maxlength="65536" autocomplete="current-password" autocapitalize="off" spellcheck="false" aria-describedby="password-guidance">
+          <input id="password-value" type="password" maxlength="65536" autocomplete="current-password" autocapitalize="off" spellcheck="false" aria-describedby="password-guidance" data-ffp-context-version="1">
           <button class="visibility" id="password-visibility" type="button" aria-label="Show password" aria-controls="password-value" aria-pressed="false">
             <img id="password-visibility-show-icon" src="/assets/eye.svg" alt="" aria-hidden="true">
             <img id="password-visibility-hide-icon" src="/assets/eye-slash.svg" alt="" aria-hidden="true" hidden>
@@ -53,5 +54,6 @@
       </section>
     </main>
     <noscript>JavaScript is required to encrypt the value on this device.</noscript>
+    <footer><p>&copy; 2026 FillFromPhone.com. Powered by <a href="https://asanowharton.com">Asano Wharton, LLC</a>. All rights reserved.</p><nav aria-label="Legal"><a href="/privacy">Privacy</a><a href="/privacy#terms">Terms of Service</a></nav></footer>
   </body>
 </html>

@@ -24,7 +24,7 @@ body {
   margin: 0;
   min-height: 100dvh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
 }
 
 .card {
@@ -91,3 +91,8 @@ button:disabled { opacity: .55; cursor: wait; }
 .receipt p { margin: .75rem 0 0; color: var(--muted); font-size: .8rem; }
 .secondary-button { background: #fff; color: var(--accent-dark); }
 .secondary-button:hover { background: var(--accent-light); }
+
+footer { width: min(calc(100% - 2rem), 31rem); margin-inline: auto; padding: 0 0 max(1rem, env(safe-area-inset-bottom)); color: var(--muted); font-size: .7rem; line-height: 1.45; text-align: center; }
+footer p { margin: 0; }
+footer nav { display: flex; justify-content: center; gap: 1rem; margin-top: .35rem; }
+footer a { color: var(--accent-dark); text-underline-offset: .15em; }

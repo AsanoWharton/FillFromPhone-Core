@@ -22,6 +22,12 @@ key  = HKDF-SHA-256(shared_secret, salt, "fill-from-phone/aes-gcm/v5")
 
 The phone encrypts UTF-8 plaintext with AES-256-GCM, a fresh 96-bit nonce, and the authenticated additional data above. The relay envelope contains only `v`, `phonePublicKey`, `nonce`, and `ciphertext`. Exact-key schema checks reject added metadata.
 
+## Credential-provider interoperability hint
+
+The phone document advertises support with `meta[name="fillfromphone-credential-context-version"]`. After a successful one-time claim, and only for a password transfer, it temporarily publishes `meta[name="fillfromphone-credential-context"]` plus equivalent namespaced attributes on the password input. The version 1 object contains only `version`, `purpose`, `claimedOrigin`, `credentialKind`, `authority`, and `mediation`.
+
+This is an advisory, user-mediated search hint—not proof that the claimed destination owns the transfer and not authority to disclose or autofill a credential. It contains no transaction ID, capability, key, challenge, expiry, ciphertext, username, or transferred value. It is suppressed for cleartext local development and removed on completion, failure, expiration, or explicit close. The hint does not change protocol version 5, the QR representation, the extension, or any relay request.
+
 ## One-time lifecycle
 
 1. The extension reserves a mailbox for at most 120 seconds.

@@ -45,17 +45,26 @@ function securityHeaders(res: ServerResponse): void {
   res.setHeader("Cache-Control", "no-store, no-transform, max-age=0");
 }
 
-function isAllowedOrigin(origin: string, config: Config): boolean {
-  if (origin === config.publicOrigin) return true;
+function requestServiceOrigin(req: IncomingMessage, config: Config): string | undefined {
+  const host = req.headers.host?.toLowerCase();
+  if (!host) return undefined;
+  if (host === new URL(config.publicOrigin).host) return config.publicOrigin;
+  if (config.developmentOrigin && host === new URL(config.developmentOrigin).host) return config.developmentOrigin;
+  return undefined;
+}
+
+function isAllowedOrigin(origin: string, serviceOrigin: string, config: Config): boolean {
+  if (origin === serviceOrigin) return true;
   const match = /^chrome-extension:\/\/([a-p]{32})$/.exec(origin);
   if (!match) return false;
+  if (serviceOrigin === config.developmentOrigin) return config.developmentExtensionIds?.has(match[1] as string) ?? false;
   return !config.allowedExtensionIds?.size || config.allowedExtensionIds.has(match[1] as string);
 }
 
-function cors(req: IncomingMessage, res: ServerResponse, config: Config): boolean {
+function cors(req: IncomingMessage, res: ServerResponse, serviceOrigin: string, config: Config): boolean {
   const origin = req.headers.origin;
   if (!origin) return true;
-  if (!isAllowedOrigin(origin, config)) return false;
+  if (!isAllowedOrigin(origin, serviceOrigin, config)) return false;
   res.setHeader("Access-Control-Allow-Origin", origin);
   res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS");
@@ -146,10 +155,15 @@ export function createApp(config: Config = loadConfig()): ReturnType<typeof crea
 
   const server = createServer(async (req, res) => {
     securityHeaders(res);
-    if (config.trustProxy && req.headers.host !== new URL(config.publicOrigin).host) {
+    const requestedServiceOrigin = requestServiceOrigin(req, config);
+    if (config.trustProxy && !requestedServiceOrigin) {
       return json(res, 421, { error: "misdirected_request" });
     }
-    if (!cors(req, res, config)) return json(res, 403, { error: "origin_forbidden" });
+    const serviceOrigin = requestedServiceOrigin ?? config.publicOrigin;
+    if (serviceOrigin === config.developmentOrigin) {
+      res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    }
+    if (!cors(req, res, serviceOrigin, config)) return json(res, 403, { error: "origin_forbidden" });
     if (req.method === "OPTIONS") return res.writeHead(204).end();
     const method = req.method ?? "GET";
     const path = new URL(req.url ?? "/", "http://service.invalid").pathname;

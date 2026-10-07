@@ -2,11 +2,23 @@ import assert from "node:assert/strict";
 import { createHash, randomBytes } from "node:crypto";
 import { once } from "node:events";
 import { readFile } from "node:fs/promises";
+import { request as httpRequest } from "node:http";
 import test from "node:test";
 import { createApp } from "../dist/server.js";
 
 const token = (bytes = 32) => randomBytes(bytes).toString("base64url");
 const hash = (value) => createHash("sha256").update(Buffer.from(value, "base64url")).digest("base64url");
+
+function rawRequest(origin, path, { method = "GET", headers = {} } = {}) {
+  return new Promise((resolve, reject) => {
+    const request = httpRequest(new URL(path, origin), { method, headers }, (response) => {
+      response.resume();
+      response.once("end", () => resolve({ status: response.statusCode, headers: response.headers }));
+    });
+    request.once("error", reject);
+    request.end();
+  });
+}
 
 async function runningApp(context) {
   const app = createApp({
@@ -134,9 +146,61 @@ test("relay schemas reject metadata and plaintext fields", async (context) => {
 test("public phone entry links to support and publishes the security contact", async () => {
   const mobile = await readFile(new URL("../dist/public/mobile.html", import.meta.url), "utf8");
   const securityPolicy = await readFile(new URL("../dist/public/security.txt", import.meta.url), "utf8");
-  assert.match(mobile, /aria-current="page">Transfer<\/span>/u);
+  assert.match(mobile, /class="site-wordmark" href="\/"/u);
   assert.match(mobile, /href="\/support">Support<\/a>/u);
-  assert.match(mobile, /href="\/privacy">Privacy<\/a>/u);
+  assert.match(mobile, /name="fillfromphone-credential-context-version" content="1"/u);
+  assert.match(mobile, /data-ffp-context-version="1"/u);
+  assert.match(mobile, /<nav aria-label="Legal"><a href="\/privacy">Privacy<\/a><a href="\/privacy#terms">Terms of Service<\/a><\/nav>/u);
+  assert.match(mobile, /&copy; 2026 FillFromPhone\.com\. Powered by <a href="https:\/\/asanowharton\.com">Asano Wharton, LLC<\/a>\. All rights reserved\./u);
+  assert.doesNotMatch(mobile, /site-menu|menu-icon|>Menu</u);
   assert.doesNotMatch(mobile, /href="\/(?:security|cryptography|licenses)"/u);
   assert.match(securityPolicy, /^Contact: mailto:contact@asanowharton\.com$/mu);
+});
+
+test("development hostname is isolated to its fixed extension identity", async (context) => {
+  const developmentId = "b".repeat(32);
+  const developmentOrigin = "https://development.example.test";
+  const app = createApp({
+    host: "127.0.0.1",
+    port: 0,
+    publicOrigin: "https://fillfromphone.com",
+    developmentOrigin,
+    developmentExtensionIds: new Set([developmentId]),
+    trustProxy: true,
+    maxActiveSessions: 10,
+    allowedExtensionIds: new Set()
+  });
+  app.listen(0, "127.0.0.1");
+  await once(app, "listening");
+  context.after(() => app.close());
+  const address = app.address();
+  assert(address && typeof address === "object");
+  const origin = `http://127.0.0.1:${address.port}`;
+  const host = new URL(developmentOrigin).host;
+
+  const allowed = await rawRequest(origin, "/v1/session", {
+    method: "OPTIONS",
+    headers: { host, origin: `chrome-extension://${developmentId}` }
+  });
+  assert.equal(allowed.status, 204);
+  assert.equal(allowed.headers["access-control-allow-origin"], `chrome-extension://${developmentId}`);
+
+  const wrongExtension = await rawRequest(origin, "/v1/session", {
+    method: "OPTIONS",
+    headers: { host, origin: `chrome-extension://${"a".repeat(32)}` }
+  });
+  assert.equal(wrongExtension.status, 403);
+
+  const crossedWebsiteOrigin = await rawRequest(origin, "/v1/session", {
+    method: "OPTIONS",
+    headers: { host, origin: "https://fillfromphone.com" }
+  });
+  assert.equal(crossedWebsiteOrigin.status, 403);
+
+  const developmentPage = await rawRequest(origin, `/t/${token()}`, { headers: { host } });
+  assert.equal(developmentPage.status, 200);
+  assert.equal(developmentPage.headers["x-robots-tag"], "noindex, nofollow, noarchive");
+
+  const unknownHost = await rawRequest(origin, "/api/health/ready", { headers: { host: "unknown.example" } });
+  assert.equal(unknownHost.status, 421);
 });
