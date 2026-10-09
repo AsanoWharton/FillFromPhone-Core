@@ -19,7 +19,7 @@
     "@fontsource/sora": "^5.3.0",
     "@fontsource/space-grotesk": "^5.3.0",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.4",
     "esbuild": "^0.25.0",
     "typescript": "^5.9.0"
   },
