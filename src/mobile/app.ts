@@ -172,8 +172,8 @@ async function start(): Promise<void> {
   document.querySelector<HTMLLabelElement>("#value-label")!.textContent = passwordMode ? "Choose or enter a password" : longTextMode ? "Enter or paste long text" : "Enter or paste short text";
   document.querySelector<HTMLElement>("#password-guidance")!.hidden = !passwordMode;
   document.querySelector<HTMLElement>("#assurance")!.textContent = passwordMode
-    ? "Masked, encrypted end-to-end, and cleared immediately by Fill from Phone. Your browser or password manager controls its own storage."
-    : "Encrypted end-to-end. Nothing is saved by Fill from Phone.";
+    ? "Masked, encrypted end-to-end, and cleared immediately by Remote Fill. Your browser or password manager controls its own storage."
+    : "Encrypted end-to-end. Nothing is saved by Remote Fill.";
   shortInput.hidden = passwordMode || longTextMode;
   longTextarea.hidden = !longTextMode;
   passwordControl.hidden = !passwordMode;

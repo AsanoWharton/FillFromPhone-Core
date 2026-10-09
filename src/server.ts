@@ -357,7 +357,7 @@ if (process.argv[1] && realpathSync(fileURLToPath(import.meta.url)) === realpath
   const server = createApp(config);
   server.listen(config.port, config.host, () => {
     // Startup metadata contains no transaction or user data.
-    process.stdout.write(`fill-from-phone listening on ${config.host}:${config.port}\n`);
+    process.stdout.write(`remote-fill listening on ${config.host}:${config.port}\n`);
   });
   const shutdown = (): void => {
     server.close(() => process.exit(0));

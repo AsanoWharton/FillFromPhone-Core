@@ -1,8 +1,8 @@
-# Fill from Phone Core
+# Remote Fill Core
 
-This is the primary technical repository for Fill from Phone. It contains the memory-only relay, the phone data-entry endpoint, the protocol boundary, and the tests that enforce single-use delivery. The product connects one phone browser to one explicitly selected browser field without an account, a paired device, clipboard synchronization, or a durable credential store.
+This is the primary technical repository for Remote Fill. It contains the memory-only relay, the phone data-entry endpoint, the protocol boundary, and the tests that enforce single-use delivery. The product connects one phone browser to one explicitly selected browser field without an account, a paired device, clipboard synchronization, or a durable credential store.
 
-The Chrome receiver is maintained in `FillFromPhone-Extension`. Marketing, privacy, and support pages are maintained in `FillFromPhone-Site`. Those separations keep the security-critical data path small enough to inspect directly.
+The Chrome receiver is maintained in `RemoteFill-Extension`. Marketing, privacy, and support pages are maintained in `RemoteFill-Site`. Those separations keep the security-critical data path small enough to inspect directly.
 
 ## Security properties implemented here
 
