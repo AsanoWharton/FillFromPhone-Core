@@ -5,7 +5,7 @@ The browser extension creates a fresh 256-bit transaction identifier, 256-bit re
 The QR contains a URL of this form:
 
 ```text
-https://fillfromphone.com/t/43_CHARACTER_ID#BASE64URL_BOOTSTRAP
+https://remotefill.com/t/43_CHARACTER_ID#BASE64URL_BOOTSTRAP
 ```
 
 The fragment carries protocol version, routing slot, identifier, desktop public key, challenge, expiry, destination origin, write capability, and field class. URL fragments are not sent in HTTP requests. The phone checks that the path identifier matches the fragment and removes both from browser history after parsing.

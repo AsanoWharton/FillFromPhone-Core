@@ -10,7 +10,7 @@ if (!["127.0.0.1", "localhost", "::1"].includes(parsedTarget.hostname) && proces
 }
 const total = boundedInteger("TOTAL", 500, 1, 20_000);
 const concurrency = boundedInteger("CONCURRENCY", 25, 1, 200);
-const host = process.env.REQUEST_HOST ?? "fillfromphone.com";
+const host = process.env.REQUEST_HOST ?? "remotefill.com";
 const samples = [];
 const failures = [];
 let cursor = 0;

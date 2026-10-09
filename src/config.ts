@@ -31,7 +31,7 @@ function boolean(name: string, fallback: boolean): boolean {
 }
 
 export function loadConfig(): Config {
-  const publicOrigin = process.env.PUBLIC_ORIGIN ?? "https://fillfromphone.com";
+  const publicOrigin = process.env.PUBLIC_ORIGIN ?? "https://remotefill.com";
   const parsed = new URL(publicOrigin);
   if (!['https:', 'http:'].includes(parsed.protocol) || parsed.pathname !== '/' || parsed.search || parsed.hash) {
     throw new Error("invalid PUBLIC_ORIGIN");

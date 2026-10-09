@@ -24,7 +24,7 @@ async function runningApp(context) {
   const app = createApp({
     host: "127.0.0.1",
     port: 8787,
-    publicOrigin: "https://fillfromphone.com",
+    publicOrigin: "https://remotefill.com",
     trustProxy: false,
     maxActiveSessions: 100,
     slotId: "B"
@@ -161,7 +161,7 @@ test("public phone entry links to support and publishes the security contact", a
   assert.match(mobile, /\/assets\/eye\.svg\?v=0d514e/u);
   assert.match(mobile, /\/assets\/eye-slash\.svg\?v=0d514e/u);
   assert.match(mobile, /<nav aria-label="Legal"><a href="\/privacy">Privacy<\/a><a href="\/privacy#terms">Terms of Service<\/a><\/nav>/u);
-  assert.match(mobile, /<p class="footer-copy"><span>&copy; 2026 <a href="https:\/\/fillfromphone\.com">Remote Fill<\/a>\.<\/span><span>Powered by <a href="https:\/\/asanowharton\.com">Asano Wharton, LLC<\/a>\.<\/span><span>All rights reserved\.<\/span><\/p>/u);
+  assert.match(mobile, /<p class="footer-copy"><span>&copy; 2026 <a href="https:\/\/remotefill\.com">Remote Fill<\/a>\.<\/span><span>Powered by <a href="https:\/\/asanowharton\.com">Asano Wharton, LLC<\/a>\.<\/span><span>All rights reserved\.<\/span><\/p>/u);
   assert.doesNotMatch(mobile, /site-menu|menu-icon|>Menu</u);
   assert.doesNotMatch(mobile, /href="\/(?:security|cryptography|licenses)"/u);
   const supportRule = headerStyles.match(/\.site-support \{([^}]*)\}/u)?.[1] ?? "";
@@ -176,7 +176,7 @@ test("development hostname is isolated to its fixed extension identity", async (
   const app = createApp({
     host: "127.0.0.1",
     port: 0,
-    publicOrigin: "https://fillfromphone.com",
+    publicOrigin: "https://remotefill.com",
     developmentOrigin,
     developmentExtensionIds: new Set([developmentId]),
     trustProxy: true,
@@ -206,7 +206,7 @@ test("development hostname is isolated to its fixed extension identity", async (
 
   const crossedWebsiteOrigin = await rawRequest(origin, "/v1/session", {
     method: "OPTIONS",
-    headers: { host, origin: "https://fillfromphone.com" }
+    headers: { host, origin: "https://remotefill.com" }
   });
   assert.equal(crossedWebsiteOrigin.status, 403);
 
